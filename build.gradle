@@ -1,0 +1,65 @@
+plugins {
+  id 'java-library'
+  id 'jacoco'
+  id 'checkstyle'
+  id 'idea'
+}
+
+group = 'it.tccr.jseq'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '15'
+
+repositories {
+  // Use Maven Central for resolving dependencies.
+  mavenCentral()
+}
+
+dependencies {
+  // Use JUnit Jupiter for testing.
+  testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
+
+  // This dependency is exported to consumers, that is to say found on their compile classpath.
+  api 'org.apache.commons:commons-math3:3.6.1'
+
+  // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+  implementation 'com.google.guava:guava:31.0.1-jre'
+}
+
+ext.versions = [
+  checkstyleVersion: "8.39"
+]
+
+jacoco {
+  toolVersion = '0.8.7'
+}
+
+tasks.withType(Test) {
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  reports {
+    xml.enabled true
+    csv.enabled false
+    html.enabled true
+    html.destination file("${buildDir}/reports/jacocoHtml")
+  }
+}
+
+test {
+  useJUnitPlatform()
+  jacoco {
+    destinationFile = file("$buildDir/jacoco/${name}.exec")
+  }
+  testLogging {
+    events "failed"
+    exceptionFormat "full"
+    showStandardStreams = true
+  }
+}
+
+checkstyle {
+  toolVersion = "${versions.checkstyleVersion}"
+}
+checkstyleMain.source = "src/main/java"
+checkstyleTest.source = "src/test/java"

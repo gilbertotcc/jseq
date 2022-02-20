@@ -22,15 +22,18 @@ public class JsonSeqParser {
   private List<Json> findJsons(byte[] bytes) {
     List<Validation<String, Json>> jsons = List.empty();
     int jsonStartIndex = 0;
-    for (int currentIndex = 0; currentIndex < bytes.length; currentIndex++) {
+    int currentIndex = 0;
+    while (currentIndex < bytes.length) {
       if (isRecordSeparator(bytes[currentIndex])) {
         var json = toJson(bytes, jsonStartIndex, currentIndex);
         jsons = jsons.append(json);
         jsonStartIndex = currentIndex;
-      } else if (currentIndex == bytes.length - 1) {
-        var json = toJson(bytes, jsonStartIndex, bytes.length);
-        jsons = jsons.append(json);
       }
+      currentIndex++;
+    }
+    if (jsonStartIndex < currentIndex) {
+      var json = toJson(bytes, jsonStartIndex, bytes.length);
+      jsons = jsons.append(json);
     }
     return jsons.flatMap(Validation::toOption);
   }
@@ -40,23 +43,22 @@ public class JsonSeqParser {
   }
 
   private Validation<String, Json> toJson(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
-    return toRecord(bytes, startIndexInclusive, endIndexExclusive)
-      .flatMap(this::validateJson);
-  }
-
-  private Validation<String, byte[]> toRecord(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
     byte[] record = subarray(bytes, startIndexInclusive, endIndexExclusive);
-    return validateNotEmpty(record).flatMap(this::validateStartOfRecord);
+    return toRecord(record)
+      .flatMap(this::validateJson)
+      .mapError(validationError -> "Invalid JSON at indexes %d-%d. Error: %s"
+        .formatted(startIndexInclusive, endIndexExclusive - 1, validationError)
+      );
   }
 
-  private Validation<String, byte[]> validateNotEmpty(byte[] bytes) {
-    return bytes.length > 1 ? valid(bytes) : invalid("Record is empty");
+  private Validation<String, byte[]> toRecord(byte[] record) {
+    return validateRecordFormat(record);
   }
 
-  private Validation<String, byte[]> validateStartOfRecord(byte[] bytes) {
-    return isRecordSeparator(bytes[0])
-      ? valid(subarray(bytes, 1, bytes.length))
-      : invalid("Missing start character RS");
+  private Validation<String, byte[]> validateRecordFormat(byte[] record) {
+    return record.length > 1 && isRecordSeparator(record[0])
+      ? valid(subarray(record, 1, record.length))
+      : invalid("Invalid record format");
   }
 
   private Validation<String, Json> validateJson(byte[] record) {

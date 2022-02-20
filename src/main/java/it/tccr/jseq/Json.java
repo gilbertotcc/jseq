@@ -5,7 +5,7 @@ import lombok.Value;
 
 @Value(staticConstructor = "of")
 @Getter
-public class JsonSeqItem {
+public class Json {
 
   String content;
 }

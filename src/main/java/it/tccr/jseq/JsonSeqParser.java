@@ -3,11 +3,13 @@ package it.tccr.jseq;
 import io.vavr.collection.List;
 import io.vavr.control.Option;
 import io.vavr.control.Validation;
+import lombok.extern.slf4j.Slf4j;
 
 import static io.vavr.control.Validation.invalid;
 import static io.vavr.control.Validation.valid;
 import static org.apache.commons.lang3.ArrayUtils.subarray;
 
+@Slf4j
 public class JsonSeqParser {
 
   static final byte recordSeparator = 0x1e;
@@ -23,11 +25,11 @@ public class JsonSeqParser {
     var lastRecordSeparatorIndex = Option.<Integer>none();
     for (int index = 0; index < bytes.length; index++) {
       if (isRecordSeparator(bytes[index]) && lastRecordSeparatorIndex.isEmpty()) {
-        var json = toJson(bytes, 0, index - 1);
+        var json = toJson(bytes, 0, index);
         jsons = jsons.append(json);
         lastRecordSeparatorIndex = Option.some(index);
       } else if (isRecordSeparator(bytes[index]) && lastRecordSeparatorIndex.isDefined()) {
-        var json = toJson(bytes, lastRecordSeparatorIndex.get(), index - 1);
+        var json = toJson(bytes, lastRecordSeparatorIndex.get(), index);
         jsons = jsons.append(json);
         lastRecordSeparatorIndex = Option.some(index);
       } else if (index == bytes.length - 1) {
@@ -49,6 +51,7 @@ public class JsonSeqParser {
 
   private Validation<String, byte[]> toRecord(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
     byte[] record = subarray(bytes, startIndexInclusive, endIndexExclusive);
+    log.trace("Validate record {}", new String(record));
     return validateNotEmpty(record).flatMap(this::validateStartOfRecord);
   }
 

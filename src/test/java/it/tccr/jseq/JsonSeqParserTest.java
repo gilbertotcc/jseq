@@ -29,14 +29,14 @@ public class JsonSeqParserTest {
 
   private static Stream<Arguments> jsonSequences() {
     return Stream.of(
-//      arguments("", List.empty()),
-//      arguments("\u001e", List.empty()),
-//      arguments("\u001e\"xyz\"", List.of("\"xyz\"")),
-//      arguments("\u001e1.23", List.of("1.23")),
-//      arguments("\u001e{ \"field\": \"value\" }", List.of("{ \"field\": \"value\" }")),
-//      arguments("\u001e[]", List.of("[]")),
-//      arguments("\u001etrue", List.of("true")),
-//      arguments("\u001enull", List.of("null")),
+      arguments("", List.empty()),
+      arguments("\u001e", List.empty()),
+      arguments("\u001e\"xyz\"", List.of("\"xyz\"")),
+      arguments("\u001e1.23", List.of("1.23")),
+      arguments("\u001e{ \"field\": \"value\" }", List.of("{ \"field\": \"value\" }")),
+      arguments("\u001e[]", List.of("[]")),
+      arguments("\u001etrue", List.of("true")),
+      arguments("\u001enull", List.of("null")),
       arguments(
         "\u001e\u001e\"xyz\"\u001e1.23\u001e{ \"field\": \"value\" }\u001e[]\u001etrue\u001enull",
         List.of("\"xyz\"", "1.23", "{ \"field\": \"value\" }", "[]", "true", "null")

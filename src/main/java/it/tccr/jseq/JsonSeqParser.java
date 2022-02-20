@@ -1,7 +1,6 @@
 package it.tccr.jseq;
 
 import io.vavr.collection.List;
-import io.vavr.control.Option;
 import io.vavr.control.Validation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,18 +21,14 @@ public class JsonSeqParser {
 
   private List<Json> findJsons(byte[] bytes) {
     List<Validation<String, Json>> jsons = List.empty();
-    var lastRecordSeparatorIndex = Option.<Integer>none();
-    for (int index = 0; index < bytes.length; index++) {
-      if (isRecordSeparator(bytes[index]) && lastRecordSeparatorIndex.isEmpty()) {
-        var json = toJson(bytes, 0, index);
+    int jsonStartIndex = 0;
+    for (int currentIndex = 0; currentIndex < bytes.length; currentIndex++) {
+      if (isRecordSeparator(bytes[currentIndex])) {
+        var json = toJson(bytes, jsonStartIndex, currentIndex);
         jsons = jsons.append(json);
-        lastRecordSeparatorIndex = Option.some(index);
-      } else if (isRecordSeparator(bytes[index]) && lastRecordSeparatorIndex.isDefined()) {
-        var json = toJson(bytes, lastRecordSeparatorIndex.get(), index);
-        jsons = jsons.append(json);
-        lastRecordSeparatorIndex = Option.some(index);
-      } else if (index == bytes.length - 1) {
-        var json = toJson(bytes, lastRecordSeparatorIndex.getOrElse(0), bytes.length);
+        jsonStartIndex = currentIndex;
+      } else if (currentIndex == bytes.length - 1) {
+        var json = toJson(bytes, jsonStartIndex, bytes.length);
         jsons = jsons.append(json);
       }
     }
@@ -51,12 +46,11 @@ public class JsonSeqParser {
 
   private Validation<String, byte[]> toRecord(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
     byte[] record = subarray(bytes, startIndexInclusive, endIndexExclusive);
-    log.trace("Validate record {}", new String(record));
     return validateNotEmpty(record).flatMap(this::validateStartOfRecord);
   }
 
   private Validation<String, byte[]> validateNotEmpty(byte[] bytes) {
-    return bytes.length > 0 ? valid(bytes) : invalid("Record is empty");
+    return bytes.length > 1 ? valid(bytes) : invalid("Record is empty");
   }
 
   private Validation<String, byte[]> validateStartOfRecord(byte[] bytes) {

@@ -15,7 +15,7 @@ public class JsonSeqParserTest {
 
   @ParameterizedTest
   @MethodSource("jsonSequences")
-  void parseEmptyJsonSequenceShouldSucceed(String jsonSequence, List<String> expectedJson) {
+  void parseJsonSequenceShouldSucceed(String jsonSequence, List<String> expectedJson) {
     // given
     var parser = new JsonSeqParser();
     var input = jsonSequence.getBytes(StandardCharsets.UTF_8);

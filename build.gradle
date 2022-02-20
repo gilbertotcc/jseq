@@ -20,16 +20,22 @@ java {
 
 ext.versions = [
   vavrVersion: "0.10.4",
-  logbackVersion: "1.2.6",
+  jacksonVersion: "2.13.1",
+  logbackVersion: "1.2.10",
   lombokVersion: "1.18.22",
-  junitVersion: "5.8.1",
-  mockitoVersion: "4.0.0",
-  assertJVersion: "3.21.0",
+  commonsLang3Version: "3.0",
+  junitVersion: "5.8.2",
+  mockitoVersion: "4.3.1",
+  assertJVersion: "3.22.0",
+  assertJVavrVersion: "0.4.2",
   checkstyleVersion: "8.39"
 ]
 
 dependencies {
   implementation "io.vavr:vavr:${versions.vavrVersion}"
+  implementation "com.fasterxml.jackson.core:jackson-core:${versions.jacksonVersion}"
+  implementation "com.fasterxml.jackson.core:jackson-databind:${versions.jacksonVersion}"
+  implementation "org.apache.commons:commons-lang3:${versions.commonsLang3Version}"
   implementation "ch.qos.logback:logback-classic:${versions.logbackVersion}"
   compileOnly "org.projectlombok:lombok:${versions.lombokVersion}"
 
@@ -37,12 +43,14 @@ dependencies {
 
   testCompileOnly "org.projectlombok:lombok:${versions.lombokVersion}"
   testAnnotationProcessor "org.projectlombok:lombok:${versions.lombokVersion}"
+
   testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junitVersion}"
   testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junitVersion}"
   testImplementation "org.junit.jupiter:junit-jupiter-params:${versions.junitVersion}"
   testImplementation "org.mockito:mockito-core:${versions.mockitoVersion}"
   testImplementation "org.mockito:mockito-junit-jupiter:${versions.mockitoVersion}"
   testImplementation "org.assertj:assertj-core:${versions.assertJVersion}"
+  testImplementation "org.assertj:assertj-vavr:${versions.assertJVavrVersion}"
 }
 
 jacoco {

@@ -24,7 +24,7 @@ public class JsonSeqParserTest {
     var fields = parser.parse(input);
 
     // then
-    assertThat(fields).containsExactlyElementsOf(expectedJson);
+    assertThat(fields.map(Json::getContent)).containsExactlyElementsOf(expectedJson);
   }
 
   private static Stream<Arguments> jsonSequences() {

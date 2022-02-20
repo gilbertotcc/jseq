@@ -7,5 +7,15 @@ import lombok.Value;
 @Getter
 public class Json {
 
+  public enum Type {
+    ARRAY,
+    BOOLEAN,
+    NULL,
+    NUMBER,
+    OBJECT,
+    STRING
+  }
+
+  Type type;
   String content;
 }

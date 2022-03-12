@@ -10,24 +10,48 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '15'
 
 repositories {
-  // Use Maven Central for resolving dependencies.
   mavenCentral()
+  maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
 }
 
-dependencies {
-  // Use JUnit Jupiter for testing.
-  testImplementation 'org.junit.jupiter:junit-jupiter:5.8.1'
-
-  // This dependency is exported to consumers, that is to say found on their compile classpath.
-  api 'org.apache.commons:commons-math3:3.6.1'
-
-  // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-  implementation 'com.google.guava:guava:31.0.1-jre'
+java {
+  withSourcesJar()
 }
 
 ext.versions = [
+  vavrVersion: "0.10.4",
+  jacksonVersion: "2.13.2",
+  logbackVersion: "1.2.11",
+  lombokVersion: "1.18.22",
+  commonsLang3Version: "3.12.0",
+  junitVersion: "5.8.2",
+  mockitoVersion: "4.3.1",
+  assertJVersion: "3.22.0",
+  assertJVavrVersion: "0.4.2",
   checkstyleVersion: "8.39"
 ]
+
+dependencies {
+  implementation "io.vavr:vavr:${versions.vavrVersion}"
+  implementation "com.fasterxml.jackson.core:jackson-core:${versions.jacksonVersion}"
+  implementation "com.fasterxml.jackson.core:jackson-databind:${versions.jacksonVersion}"
+  implementation "org.apache.commons:commons-lang3:${versions.commonsLang3Version}"
+  implementation "ch.qos.logback:logback-classic:${versions.logbackVersion}"
+  compileOnly "org.projectlombok:lombok:${versions.lombokVersion}"
+
+  annotationProcessor "org.projectlombok:lombok:${versions.lombokVersion}"
+
+  testCompileOnly "org.projectlombok:lombok:${versions.lombokVersion}"
+  testAnnotationProcessor "org.projectlombok:lombok:${versions.lombokVersion}"
+
+  testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${versions.junitVersion}"
+  testImplementation "org.junit.jupiter:junit-jupiter-api:${versions.junitVersion}"
+  testImplementation "org.junit.jupiter:junit-jupiter-params:${versions.junitVersion}"
+  testImplementation "org.mockito:mockito-core:${versions.mockitoVersion}"
+  testImplementation "org.mockito:mockito-junit-jupiter:${versions.mockitoVersion}"
+  testImplementation "org.assertj:assertj-core:${versions.assertJVersion}"
+  testImplementation "org.assertj:assertj-vavr:${versions.assertJVavrVersion}"
+}
 
 jacoco {
   toolVersion = '0.8.7'

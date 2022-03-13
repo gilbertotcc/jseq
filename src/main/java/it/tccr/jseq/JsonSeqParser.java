@@ -52,27 +52,27 @@ public class JsonSeqParser {
   }
 
   private Validation<String, Json> toJson(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
-    byte[] record = subarray(bytes, startIndexInclusive, endIndexExclusive);
-    return toRecord(record)
+    byte[] recordBytes = subarray(bytes, startIndexInclusive, endIndexExclusive);
+    return toRecord(recordBytes)
       .flatMap(r -> validateJson(r).mapError(errors -> "Cannot validate JSON")) // FIXME
       .mapError(validationError -> "Invalid JSON at indexes %d-%d. Error: %s"
         .formatted(startIndexInclusive, endIndexExclusive - 1, validationError)
       );
   }
 
-  private Validation<String, byte[]> toRecord(byte[] record) {
-    return validateRecordFormat(record);
+  private Validation<String, byte[]> toRecord(byte[] recordBytes) {
+    return validateRecordFormat(recordBytes);
   }
 
-  private Validation<String, byte[]> validateRecordFormat(byte[] record) {
-    return record.length > 1 && isRecordSeparator(record[0])
-      ? valid(subarray(record, 1, record.length))
+  private Validation<String, byte[]> validateRecordFormat(byte[] recordBytes) {
+    return recordBytes.length > 1 && isRecordSeparator(recordBytes[0])
+      ? valid(subarray(recordBytes, 1, recordBytes.length))
       : invalid("Invalid record format");
   }
 
-  private Validation<Seq<String>, Json> validateJson(byte[] record) {
-    return Validation.<String, String>valid(new String(record))
-      .combine(validateJsonFormat(record))
+  private Validation<Seq<String>, Json> validateJson(byte[] recordBytes) {
+    return Validation.<String, String>valid(new String(recordBytes))
+      .combine(validateJsonFormat(recordBytes))
       .ap((content, type) -> Json.of(type, content));
   }
 

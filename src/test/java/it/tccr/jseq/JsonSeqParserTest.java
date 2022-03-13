@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 import static org.assertj.vavr.api.VavrAssertions.assertThat;
 import static org.junit.jupiter.params.provider.Arguments.arguments;
 
-public class JsonSeqParserTest {
+class JsonSeqParserTest {
 
   @ParameterizedTest
   @MethodSource("jsonSequences")

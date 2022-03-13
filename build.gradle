@@ -3,6 +3,7 @@ plugins {
   id 'maven-publish'
   id 'jacoco'
   id 'checkstyle'
+  id 'org.sonarqube' version '3.3'
   id 'idea'
 }
 
@@ -88,6 +89,14 @@ checkstyle {
 }
 checkstyleMain.source = "src/main/java"
 checkstyleTest.source = "src/test/java"
+
+sonarqube {
+  properties {
+    property "sonar.projectKey", "gilbertotcc_jseq"
+    property "sonar.organization", "gilbertotcc-github"
+    property "sonar.host.url", "https://sonarcloud.io"
+  }
+}
 
 publishing {
   repositories {

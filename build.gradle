@@ -102,10 +102,7 @@ publishing {
   repositories {
     maven {
       name = "GitHubPackages"
-      def repoBaseUrl = 'https://maven.pkg.github.com/gilbertotcc/jseq'
-      def releasesRepoUrl = layout.buildDirectory.dir("$repoBaseUrl/releases")
-      def snapshotsRepoUrl = layout.buildDirectory.dir("$repoBaseUrl/snapshots")
-      url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+      url = 'https://maven.pkg.github.com/gilbertotcc/jseq'
       credentials {
         username = System.getenv("GITHUB_ACTOR")
         password = System.getenv("GITHUB_TOKEN")

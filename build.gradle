@@ -8,7 +8,7 @@ plugins {
 }
 
 group = 'it.tccr.jseq'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.1'
 sourceCompatibility = '15'
 
 repositories {
@@ -112,6 +112,7 @@ publishing {
 
   publications {
     gpr(MavenPublication) {
+      artifactId = 'jseq'
       from components.java
     }
   }

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeType;
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import lombok.extern.slf4j.Slf4j;
@@ -54,7 +53,7 @@ public class JsonSeqParser {
   private Validation<String, Json> toJson(byte[] bytes, int startIndexInclusive, int endIndexExclusive) {
     byte[] recordBytes = subarray(bytes, startIndexInclusive, endIndexExclusive);
     return toRecord(recordBytes)
-      .flatMap(r -> validateJson(r).mapError(errors -> "Cannot validate JSON")) // FIXME
+      .flatMap(this::validateJson)
       .mapError(validationError -> "Invalid JSON at indexes %d-%d. Error: %s"
         .formatted(startIndexInclusive, endIndexExclusive - 1, validationError)
       );
@@ -70,10 +69,9 @@ public class JsonSeqParser {
       : invalid("Invalid record format");
   }
 
-  private Validation<Seq<String>, Json> validateJson(byte[] recordBytes) {
-    return Validation.<String, String>valid(new String(recordBytes))
-      .combine(validateJsonFormat(recordBytes))
-      .ap((content, type) -> Json.of(type, content));
+  private Validation<String, Json> validateJson(byte[] recordBytes) {
+    return validateJsonFormat(recordBytes)
+      .map(jsonType -> Json.of(jsonType, new String(recordBytes)));
   }
 
   private Validation<String, Json.Type> validateJsonFormat(byte[] content) {
